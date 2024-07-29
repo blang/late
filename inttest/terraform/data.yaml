@@ -1,0 +1,5 @@
+resources:
+- name: mysubnet1
+  vpcid: vpc-123
+- name: mysubnet2
+  vpcid: vpc-456

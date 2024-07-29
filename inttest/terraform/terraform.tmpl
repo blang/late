@@ -1,0 +1,5 @@
+{{- range .resources }}
+resource "res-{{.name}}" {
+    vpcid = "{{.vpcid | upper }}"
+}
+{{- end}}
