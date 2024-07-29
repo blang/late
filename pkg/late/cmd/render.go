@@ -27,7 +27,7 @@ var renderCmd = &cobra.Command{
 		}
 
 		// Handle file vs stdin
-		dataFile, err := cmd.PersistentFlags().GetString("data")
+		dataFile, err := cmd.PersistentFlags().GetString("input")
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "No datafile parameter")
 			return
@@ -46,12 +46,31 @@ var renderCmd = &cobra.Command{
 			dataReader = reader
 		}
 
-		dataParser := &dm.JsonDataModel{}
-		var data interface{}
-		err = dataParser.Parse(dataReader, &data)
+		dataFormat, err := cmd.PersistentFlags().GetString("data-format")
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Could not parse data: ", err)
+			fmt.Fprintf(os.Stderr, "Could not read dataformat", err)
 			return
+		}
+
+		var dataParser dm.DataParser
+		var data interface{}
+
+		switch dataFormat {
+		case "json":
+			dataParser = &dm.JsonDataModel{}
+			err = dataParser.Parse(dataReader, &data)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Could not parse data: ", err)
+				return
+			}
+
+		case "yaml":
+			dataParser = &dm.YamlDataModel{}
+			err = dataParser.Parse(dataReader, &data)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Could not parse data: ", err)
+				return
+			}
 		}
 
 		templateFile, err := cmd.PersistentFlags().GetString("template")
@@ -70,8 +89,9 @@ var renderCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(renderCmd)
-	renderCmd.PersistentFlags().StringP("template", "f", "template.tmpl", "Template file")
-	renderCmd.PersistentFlags().StringP("data", "d", "", "Data file, otherwise stdout")
+	renderCmd.PersistentFlags().StringP("template", "t", "template.tmpl", "Template file")
+	renderCmd.PersistentFlags().StringP("input", "i", "", "Data file, otherwise stdout")
+	renderCmd.PersistentFlags().StringP("data-format", "f", "json", "Data format, json or yaml")
 	renderCmd.PersistentFlags().String("delimiterLeft", "{{", "Template syntax left delimiter")
 	renderCmd.PersistentFlags().String("delimiterRight", "}}", "Template syntax left delimiter")
 }

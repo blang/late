@@ -5,6 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/Masterminds/sprig/v3"
 	"text/template"
 
 	log "github.com/kubernetes/klog"
@@ -26,6 +27,7 @@ func Render(data interface{}, tmpl string, out io.Writer, options *RenderOptions
 	t := template.New(tmpl)
 	log.V(5).Infoln("Use Delimiter options:", options.DelimiterLeft, options.DelimiterRight)
 	t = t.Delims(options.DelimiterLeft, options.DelimiterRight)
+	t = t.Funcs(sprig.FuncMap())
 	//
 	var err error
 	t, err = t.ParseFiles(tmpl)
@@ -33,7 +35,7 @@ func Render(data interface{}, tmpl string, out io.Writer, options *RenderOptions
 		return errors.Wrap(err, "Could not parse template")
 	}
 
-	log.V(5).Infof("Associated templates: %s", t.Templates())
+	log.V(5).Infof("Associated templates: %q", t.Templates())
 
 	err = t.Execute(out, data)
 	if err != nil {
