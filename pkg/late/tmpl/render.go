@@ -7,6 +7,7 @@ import (
 
 	"github.com/Masterminds/sprig/v3"
 	"text/template"
+    path "path/filepath"
 
 	log "github.com/kubernetes/klog"
 )
@@ -24,7 +25,7 @@ type RenderOptions struct {
 }
 
 func Render(data interface{}, tmpl string, out io.Writer, options *RenderOptions) error {
-	t := template.New(tmpl)
+	t := template.New(path.Base(tmpl))
 	log.V(5).Infoln("Use Delimiter options:", options.DelimiterLeft, options.DelimiterRight)
 	t = t.Delims(options.DelimiterLeft, options.DelimiterRight)
 	t = t.Funcs(sprig.FuncMap())
