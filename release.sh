@@ -17,6 +17,7 @@ id=$(docker create "build/late:${version}" sh)
 docker cp $id:'/release/late_darwin_arm64.zip' ./build/
 docker cp $id:'/release/late_darwin_amd64.zip' ./build/
 docker cp $id:'/release/late_linux_amd64.zip' ./build/
+docker cp $id:'/release/late_linux_arm64.zip' ./build/
 echo "# Removing container"
 docker rm -v $id
 echo "# Success"
