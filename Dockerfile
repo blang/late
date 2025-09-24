@@ -1,4 +1,4 @@
-FROM golang:1.22.5-alpine3.20 as builder
+FROM golang:1.25.1-alpine as builder
 ARG APP_VERSION
 ENV APP_VERSION=$APP_VERSION
 WORKDIR /go/src/late
